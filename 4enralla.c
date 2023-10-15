@@ -1,30 +1,28 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include<windows.h>
 
 const short VICTORIA=1;
 const short DERROTA=-1;
 const short TAULES=0;
 
-const int COLUMNES=4;
-const int FILES=4;
+const int COLUMNES=7;
+const int FILES=6;
 
-//static char diccionari[9223372036854775807];
+const int ENRALLA=4;
 
 void mostrarMatriu(char matriu[FILES][COLUMNES]);
 void inicialitzarMatriu(char matriu[FILES][COLUMNES]);
-short funcioRecursiva(char matriu[FILES][COLUMNES], int profunditat);
+short minimax(char matriu[FILES][COLUMNES], int profunditat);
 bool buscaVictoria(char matriu[FILES][COLUMNES], int x, int y);
-void copiarMatriu(char matriuAntiga[FILES][COLUMNES], char matriuNova[FILES][COLUMNES]);
 void giraMatriu(char matriu[FILES][COLUMNES]);
-//long funcioClau(char matriu[FILES][COLUMNES]);
-//void inicialitzarDiccionari();
+long funcioClau(char matriu[FILES][COLUMNES]);
 
 int main()
 {
-    //inicialitzarDiccionari();
     char matriu[FILES][COLUMNES];
     inicialitzarMatriu(matriu);
-    printf("%d",funcioRecursiva(matriu,0));
+    printf("%d",minimax(matriu,0));
 }
 
 void inicialitzarMatriu(char matriu[FILES][COLUMNES])
@@ -57,9 +55,11 @@ void mostrarMatriu(char matriu[FILES][COLUMNES])
     printf("\n");
 }
 
-short funcioRecursiva(char matriu[FILES][COLUMNES], int profunditat)
+short minimax(char matriu[FILES][COLUMNES], int profunditat)
 {
-    mostrarMatriu(matriu);
+    //Sleep(1000);
+    //printf("%d\n",profunditat);
+    //mostrarMatriu(matriu);
     bool ple=true;
     int resultat=DERROTA;
     for(int i=0;i<COLUMNES;i++)
@@ -78,11 +78,11 @@ short funcioRecursiva(char matriu[FILES][COLUMNES], int profunditat)
                 }
                 else
                 {
-                    char novaMatriu[FILES][COLUMNES];
-                    copiarMatriu(matriu, novaMatriu);
-                    novaMatriu[j][i]='X';
-                    giraMatriu(novaMatriu);
-                    int resultatActual=-funcioRecursiva(novaMatriu, profunditat+1);
+                    matriu[j][i]='X';
+                    giraMatriu(matriu);
+                    int resultatActual=-minimax(matriu, profunditat+1);
+                    matriu[j][i]='_';
+                    giraMatriu(matriu);
                     if(resultatActual>resultat)
                     {
                         if(resultatActual==1) return 1;
@@ -114,7 +114,7 @@ bool buscaVictoria(char matriu[FILES][COLUMNES], int y, int x)
     bool hor=true;
     bool dCre=true;
     bool dDec=true;
-    for(int i = 1; i<4;i++)
+    for(int i = 1; i<ENRALLA;i++)
     {
         if(i+x<COLUMNES)
         {
@@ -156,7 +156,7 @@ bool buscaVictoria(char matriu[FILES][COLUMNES], int y, int x)
     hor=true;
     dCre=true;
     dDec=true;
-    for(int i = -1; i>-4;i--)
+    for(int i = -1; i>-ENRALLA;i--)
     {
         if(i+x>=0)
         {
@@ -209,22 +209,11 @@ bool buscaVictoria(char matriu[FILES][COLUMNES], int y, int x)
             }
         }
     } 
-    if(vertical>2 || horitzontal>2 || dDecreixent>2 || dCreixent>2)
+    if(vertical>ENRALLA-2 || horitzontal>ENRALLA-2 || dDecreixent>ENRALLA-2 || dCreixent>ENRALLA-2)
     {
         return true;
     }
     return false;
-}
-
-void copiarMatriu(char matriuAntiga[FILES][COLUMNES], char matriuNova[FILES][COLUMNES])
-{
-    for(int i =0; i<FILES;i++)
-    {
-        for(int j=0;j<COLUMNES;j++)
-        {
-            matriuNova[i][j]=matriuAntiga[i][j];
-        }
-    }
 }
 
 void giraMatriu(char matriu[FILES][COLUMNES])
@@ -245,8 +234,9 @@ void giraMatriu(char matriu[FILES][COLUMNES])
     }
 }
 
-/*long funcioClau(char matriu[FILES][COLUMNES])
+long funcioClau(char matriu[FILES][COLUMNES])
 {
+    //PER MILLORAR <2^64 comb.
     unsigned long resultat=0;
     for(int i=0; i<COLUMNES;i++)
     {
@@ -267,13 +257,3 @@ void giraMatriu(char matriu[FILES][COLUMNES])
     }
     return resultat;
 }
-*/
-
-/*void inicialitzarDiccionari()
-{
-    for(unsigned long i=0;i<9223372036854775807;i++)
-    {
-        diccionari[i]='0';
-    }
-}
-*/
