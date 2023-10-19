@@ -11,17 +11,20 @@ const int FILES=6;
 
 const int ENRALLA=4;
 
+static char jaCercats[562949953421312];
+
 void mostrarMatriu(char matriu[FILES][COLUMNES]);
 void inicialitzarMatriu(char matriu[FILES][COLUMNES]);
 short minimax(char matriu[FILES][COLUMNES], int profunditat);
 bool buscaVictoria(char matriu[FILES][COLUMNES], int x, int y);
 void giraMatriu(char matriu[FILES][COLUMNES]);
-long funcioClau(char matriu[FILES][COLUMNES]);
+unsigned long long funcioClau(char matriu[FILES][COLUMNES]);
 
 int main()
 {
     char matriu[FILES][COLUMNES];
     inicialitzarMatriu(matriu);
+    mostrarMatriu(matriu);
     printf("%d",minimax(matriu,0));
 }
 
@@ -60,6 +63,8 @@ short minimax(char matriu[FILES][COLUMNES], int profunditat)
     //Sleep(1000);
     //printf("%d\n",profunditat);
     //mostrarMatriu(matriu);
+    unsigned long long codi=funcioClau(matriu);
+    if(jaCercats[codi]!=0) return (short)jaCercats[codi];
     bool ple=true;
     int resultat=DERROTA;
     for(int i=0;i<COLUMNES;i++)
@@ -85,7 +90,11 @@ short minimax(char matriu[FILES][COLUMNES], int profunditat)
                     giraMatriu(matriu);
                     if(resultatActual>resultat)
                     {
-                        if(resultatActual==1) return 1;
+                        if(resultatActual==VICTORIA) 
+                        {
+                            jaCercats[codi]=(char)VICTORIA;
+                            return VICTORIA;
+                        }
                         resultat=resultatActual;
                     }
                 }
@@ -96,10 +105,12 @@ short minimax(char matriu[FILES][COLUMNES], int profunditat)
 
     if(ple)
     {
+        jaCercats[codi]=(char)TAULES;
         return TAULES;
     }
     else
     {
+        jaCercats[codi]=(char)resultat;
         return resultat;
     }
 }
@@ -234,26 +245,31 @@ void giraMatriu(char matriu[FILES][COLUMNES])
     }
 }
 
-long funcioClau(char matriu[FILES][COLUMNES])
+unsigned long long funcioClau(char matriu[FILES][COLUMNES])
 {
-    //PER MILLORAR <2^64 comb.
-    unsigned long resultat=0;
+    /*
+    42 primers bits indicant si hi ha una peça blanca. Les caselles superiors sempre seran marcades independentment del color.
+    7 bits indicant el color d'aquestes peces.
+    */    
+    unsigned long long resultat=0;
+    unsigned long long  primers=0;
     for(int i=0; i<COLUMNES;i++)
     {
-        bool primerValor=true;
+        primers<<=1;
+        bool primeraOcupada=false;
         for(int j=FILES-1;j>=0;j--)
         {
-            if(matriu[j][i]!='_') 
+            resultat<<=1;
+            if(!(matriu[j][i]=='_') && !primeraOcupada)
             {
-                if(primerValor)
-                {
-                    resultat<<3;
-                    resultat+=j;
-                }
-                resultat<<1;
-                if(matriu[j][i]=='X') resultat++; 
+                primeraOcupada=true;
+                resultat++;
+                if(matriu[j][i]=='X') primers++;
             }
+            else if(matriu[j][i]=='X') resultat++;
         }
     }
+    resultat<<=COLUMNES;
+    resultat+=primers;
     return resultat;
 }
