@@ -1,17 +1,16 @@
 #include <stdio.h>
 #include <stdbool.h>
-#include<windows.h>
 
-const short VICTORIA=1;
-const short DERROTA=-1;
-const short TAULES=0;
+#define VICTORIA 1
+#define DERROTA -1
+#define TAULES 0
 
-const int COLUMNES=7;
-const int FILES=6;
+#define COLUMNES 7
+#define FILES 6
 
-const int ENRALLA=4;
+#define ENRALLA 4
 
-static char jaCercats[562949953421312];
+char jaCercats[562949953421312]={0};
 
 void mostrarMatriu(char matriu[FILES][COLUMNES]);
 void inicialitzarMatriu(char matriu[FILES][COLUMNES]);
@@ -25,7 +24,11 @@ int main()
     char matriu[FILES][COLUMNES];
     inicialitzarMatriu(matriu);
     mostrarMatriu(matriu);
-    printf("%d",minimax(matriu,0));
+    for(unsigned long long i =0;i<100;i++)
+    {
+        printf("%d: %d\n",i,jaCercats[i]);
+    }
+    //printf("%d",minimax(matriu,0));
 }
 
 void inicialitzarMatriu(char matriu[FILES][COLUMNES])
@@ -60,11 +63,11 @@ void mostrarMatriu(char matriu[FILES][COLUMNES])
 
 short minimax(char matriu[FILES][COLUMNES], int profunditat)
 {
-    //Sleep(1000);
     //printf("%d\n",profunditat);
     //mostrarMatriu(matriu);
+    
     unsigned long long codi=funcioClau(matriu);
-    if(jaCercats[codi]!=0) return (short)jaCercats[codi];
+    if(jaCercats[codi]!=0) {printf("Profunditat %d",profunditat);return (short)jaCercats[codi];}
     bool ple=true;
     int resultat=DERROTA;
     for(int i=0;i<COLUMNES;i++)
@@ -90,7 +93,7 @@ short minimax(char matriu[FILES][COLUMNES], int profunditat)
                     giraMatriu(matriu);
                     if(resultatActual>resultat)
                     {
-                        if(resultatActual==VICTORIA) 
+                        if (resultatActual == VICTORIA) 
                         {
                             jaCercats[codi]=(char)VICTORIA;
                             return VICTORIA;
